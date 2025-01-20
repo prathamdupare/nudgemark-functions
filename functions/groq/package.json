@@ -9,6 +9,7 @@
   },
   "keywords": [],
   "dependencies": {
+    "groq-sdk": "^0.12.0",
     "openai": "^4.47.1"
   },
   "devDependencies": {

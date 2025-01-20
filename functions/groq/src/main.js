@@ -1,8 +1,9 @@
 import OpenAI from 'openai';
 import { getStaticFile, throwIfMissing } from './utils.js';
+import Groq from 'groq-sdk';
 
 export default async ({ req, res }) => {
-  throwIfMissing(process.env, ['OPENAI_API_KEY']);
+  throwIfMissing(process.env, ['GROQ_API_KEY']);
 
   if (req.method === 'GET') {
     return res.text(getStaticFile('index.html'), 200, {
@@ -17,14 +18,17 @@ export default async ({ req, res }) => {
   }
 
   const openai = new OpenAI();
-
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS ?? '512'),
-      messages: [{ role: 'user', content: req.bodyJson.prompt }],
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: 'user',
+          content: 'Explain the importance of fast language models',
+        },
+      ],
+      model: 'llama-3.3-70b-versatile',
     });
-    const completion = response.choices[0].message.content;
     return res.json({ ok: true, completion }, 200);
   } catch (err) {
     return res.json({ ok: false, error: 'Failed to query model.' }, 500);
