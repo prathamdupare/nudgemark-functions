@@ -1,4 +1,3 @@
-import OpenAI from 'openai';
 import { getStaticFile, throwIfMissing } from './utils.js';
 import Groq from 'groq-sdk';
 
@@ -17,14 +16,15 @@ export default async ({ req, res }) => {
     return res.json({ ok: false, error: err.message }, 400);
   }
 
-  const openai = new OpenAI();
+  const { prompt } = req.body;
+
   const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
   try {
     const completion = await groq.chat.completions.create({
       messages: [
         {
           role: 'user',
-          content: 'Explain the importance of fast language models',
+          content:  prompt,
         },
       ],
       model: 'llama-3.3-70b-versatile',
